@@ -3,132 +3,617 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>The Open | Pro Dashboard</title>
-<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+<title>Morning Briefing</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CZHDNBP96B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CZHDNBP96B');
+</script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap');
 
   :root {
-    --bg: #0d0d0d; --surface: #141414; --surface2: #1a1a1a;
-    --border: #2a2a2a; --gold: #c8a84b; --text: #d4d4d4;
-    --up: #26a69a; --down: #ef5350;
+    --ink: #0e1a2b;
+    --paper: #f5f0e8;
+    --cream: #ede8db;
+    --rule: #c8b89a;
+    --accent: #1a3a5c;
+    --muted: #4a5a6e;
+    --card: #faf7f2;
+    --gold: #c8a84b;
+    --green: #1a9e5a;
+    --red: #c0392b;
   }
 
-  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; margin: 0; padding: 20px; }
-  
-  /* Sections */
-  section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 15px; margin-bottom: 20px; }
-  h2 { font-family: 'IBM Plex Mono'; font-size: 14px; text-transform: uppercase; color: var(--gold); margin: 0 0 15px 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Futures Cards */
-  .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-  .future-card { 
-    padding: 12px; border: 1px solid var(--border); border-radius: 4px; 
-    cursor: pointer; transition: 0.2s; background: var(--surface2);
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding: 0 0 80px 0;
   }
-  .future-card:hover { border-color: var(--gold); transform: translateY(-2px); }
-  .up { color: var(--up); } .down { color: var(--down); }
-  .future-sym { font-weight: 600; font-size: 16px; }
-  .future-price { font-family: 'IBM Plex Mono'; font-size: 14px; margin-top: 4px; }
 
-  /* Modal Styling */
-  .modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;
+  /* ── MASTHEAD ── */
+  .masthead {
+    background: var(--ink);
+    color: var(--paper);
+    text-align: center;
+    padding: 18px 20px 14px;
+    border-bottom: 3px solid var(--gold);
   }
-  .modal-content {
-    width: 90%; max-width: 1000px; background: var(--surface); 
-    border: 1px solid var(--gold); border-radius: 8px; padding: 20px; position: relative;
+  .masthead h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
-  .close-btn {
-    position: absolute; top: 10px; right: 20px; font-size: 30px; 
-    color: var(--gold); cursor: pointer; font-family: 'IBM Plex Mono';
+  .dateline {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-top: 4px;
   }
-  #chart-container { height: 500px; width: 100%; }
+
+  /* ── MARKET PULSE HEADER STRIP ── */
+  .pulse-strip {
+    background: #0a1520;
+    border-bottom: 1px solid #1e3a55;
+    padding: 10px 16px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .pulse-strip::-webkit-scrollbar { display: none; }
+  .pulse-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 72px;
+    padding: 0 10px;
+    border-right: 1px solid #1e3a55;
+  }
+  .pulse-item:last-child { border-right: none; }
+  .pulse-label {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5a7a9a;
+    margin-bottom: 2px;
+  }
+  .pulse-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e8e0d0;
+  }
+  .pulse-change {
+    font-size: 0.6rem;
+    margin-top: 1px;
+  }
+  .pulse-change.up { color: #2ecc71; }
+  .pulse-change.down { color: #e74c3c; }
+  .pulse-change.neutral { color: #5a7a9a; }
+
+  /* ── FEAR & GREED ── */
+  .fg-bar {
+    background: #0a1520;
+    border-bottom: 2px solid var(--gold);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .fg-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #5a7a9a;
+    white-space: nowrap;
+  }
+  .fg-track {
+    flex: 1;
+    height: 6px;
+    background: linear-gradient(to right, #e74c3c, #e67e22, #f1c40f, #2ecc71, #27ae60);
+    border-radius: 3px;
+    position: relative;
+  }
+  .fg-needle {
+    position: absolute;
+    top: -4px;
+    width: 14px;
+    height: 14px;
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.6s ease;
+  }
+  .fg-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    min-width: 30px;
+    text-align: right;
+  }
+  .fg-sentiment {
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 80px;
+    text-align: right;
+  }
+
+  /* ── NEXT EVENT COUNTDOWN ── */
+  .countdown-bar {
+    background: var(--accent);
+    border-bottom: 1px solid var(--gold);
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .countdown-event {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: var(--paper);
+    text-transform: uppercase;
+  }
+  .countdown-timer {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
+    background: var(--cream);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .btn-row { display: flex; gap: 8px; }
+  .run-btn {
+    flex: 1;
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    font-family: 'Playfair Display', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 11px 8px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .run-btn:hover { background: #0e2540; }
+  .run-btn:disabled { background: var(--muted); cursor: not-allowed; }
+  .run-btn.secondary { background: var(--ink); border: 1px solid var(--gold); }
+  .filter-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .filter-btn {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--gold);
+    color: var(--paper);
+  }
+
+  /* ── STATUS ── */
+  .status-bar {
+    background: var(--ink);
+    color: var(--gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-align: center;
+    padding: 8px;
+    text-transform: uppercase;
+    display: none;
+  }
+  .status-bar.visible { display: block; }
+
+  /* ── CONTENT ── */
+  .content-area {
+    padding: 14px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  .feed-section { margin-bottom: 22px; }
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 10px;
+  }
+  .section-rule span {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .section-rule::before,
+  .section-rule::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  /* ── FUTURES GRID ── */
+  .futures-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .future-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule);
+    border-radius: 2px;
+    padding: 10px 12px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .future-card:hover { background: #fff; border-left-color: var(--gold); }
+  .future-card.up { border-left-color: var(--green); }
+  .future-card.down { border-left-color: var(--red); }
+  .future-symbol {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .future-name {
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .future-price {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 5px;
+  }
+  .future-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .future-pct.up { color: var(--green); }
+  .future-pct.down { color: var(--red); }
+  .future-pct.flat { color: var(--muted); }
+
+  /* ── TICKER GRID (movers) ── */
+  .ticker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .ticker-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--rule);
+    border-radius: 2px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: block;
+  }
+  .ticker-card:hover { border-left-color: var(--gold); background: #fff; }
+  .ticker-card.gainer { border-left-color: var(--green); }
+  .ticker-card.loser  { border-left-color: var(--red); }
+  .ticker-symbol {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .ticker-name {
+    font-size: 0.64rem;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ticker-pct {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 5px;
+  }
+  .ticker-pct.up   { color: var(--green); }
+  .ticker-pct.down { color: var(--red); }
+  .ticker-price { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .ticker-vol   { font-size: 0.60rem; color: var(--rule); margin-top: 2px; }
+
+  /* ── EARNINGS ── */
+  .earnings-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .earnings-item {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .earnings-ticker {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .earnings-name { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+  .earnings-time {
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: right;
+  }
+  .earnings-est { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
+
+  /* ── NEWS ── */
+  .news-items { display: flex; flex-direction: column; gap: 8px; }
+  .news-item {
+    background: var(--card);
+    border-left: 3px solid var(--rule);
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .news-item:hover { border-left-color: var(--gold); }
+  .news-item .headline { font-weight: 400; color: var(--ink); margin-bottom: 3px; }
+  .news-item .summary {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+    line-height: 1.4;
+    display: none;
+  }
+  .news-item.expanded .summary { display: block; }
+  .news-item .meta { font-size: 0.68rem; color: var(--rule); letter-spacing: 0.04em; }
+  .news-item .read-more {
+    font-size: 0.68rem;
+    color: var(--gold);
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 4px;
+  }
+
+  /* ── FED CARDS ── */
+  .fed-card {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 12px;
+  }
+  .fed-card .fed-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .fed-card .fed-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .fed-card .fed-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+  .placeholder {
+    color: var(--muted);
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    font-size: 0.85rem;
+  }
+
+  /* ── SENTIMENT SCORE ── */
+  .sentiment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 6px 12px;
+    margin-top: 8px;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .sentiment-score {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
 
-<section>
-  <h2>Global Futures (Click to expand)</h2>
-  <div id="futuresContent" class="data-grid"></div>
-</section>
+<div class="masthead">
+  <div class="dateline" id="dateline"></div>
+  <h1>Morning Briefing</h1>
+</div>
 
-<div id="chartModal" class="modal-overlay">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeChart()">&times;</span>
-    <h2 id="modalTitle" style="margin-top:0">CHART</h2>
-    <div id="chart-container"></div>
+<!-- Live pulse strip: VIX + DXY + BTC loaded on page load -->
+<div class="pulse-strip" id="pulseStrip">
+  <div class="pulse-item"><div class="pulse-label">VIX</div><div class="pulse-value" id="pVIX">—</div><div class="pulse-change neutral" id="pVIXc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">DXY</div><div class="pulse-value" id="pDXY">—</div><div class="pulse-change neutral" id="pDXYc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">BTC</div><div class="pulse-value" id="pBTC">—</div><div class="pulse-change neutral" id="pBTCc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">Gold</div><div class="pulse-value" id="pGLD">—</div><div class="pulse-change neutral" id="pGLDc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">Oil</div><div class="pulse-value" id="pOIL">—</div><div class="pulse-change neutral" id="pOILc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">10Y</div><div class="pulse-value" id="p10Y">—</div><div class="pulse-change neutral" id="p10Yc">—</div></div>
+</div>
+
+<!-- Fear & Greed bar -->
+<div class="fg-bar">
+  <div class="fg-label">Fear &amp; Greed</div>
+  <div class="fg-track"><div class="fg-needle" id="fgNeedle" style="left:50%"></div></div>
+  <div class="fg-score" id="fgScore">—</div>
+  <div class="fg-sentiment" id="fgSentiment" style="color:#5a7a9a">Loading...</div>
+</div>
+
+<!-- Next economic event countdown -->
+<div class="countdown-bar">
+  <div class="countdown-event" id="countdownEvent">Next Event: Loading...</div>
+  <div class="countdown-timer" id="countdownTimer">--:--:--</div>
+</div>
+
+<div class="controls">
+  <div class="btn-row">
+    <button class="run-btn" id="newsBtn" onclick="fetchAllFeeds()">Pull News</button>
+    <button class="run-btn secondary" id="calBtn" onclick="toggleCalendar()">Economic Calendar</button>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" id="fedBtn" onclick="fetchFedWatch()" style="background:#1a3a5c;border:1px solid var(--gold);">Fed Watch</button>
+    <a href="https://alisdairmacdonald.substack.com" target="_blank"
+       style="flex:1;display:block;background:var(--ink);color:var(--gold);text-align:center;padding:11px 8px;border-radius:2px;text-decoration:none;font-family:'Playfair Display',serif;font-size:0.82rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--gold);">
+      Newsletter &rarr;
+    </a>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" id="futuresBtn" onclick="fetchFutures()" style="background:#1a3a5c;border:1px solid var(--gold);">Load Futures</button>
+    <button class="run-btn" id="trendingBtn" onclick="fetchTrending()" style="background:#1a3a5c;border:1px solid var(--gold);">Top Movers</button>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" id="trendingBtn2" onclick="fetchTrending()" style="background:#1a3a5c;border:1px solid var(--gold);">Top Movers</button>
+    <button class="run-btn" onclick="analyseHeadlines()" style="background:#d4763b;color:#fff;border:1px solid #d4763b;font-weight:700;">Claude Analysis</button>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('central-banks', this)">Central Banks</button>
+    <button class="filter-btn" onclick="setFilter('markets', this)">Markets</button>
+    <button class="filter-btn" onclick="setFilter('geopolitics', this)">Geopolitics</button>
+    <button class="filter-btn" onclick="setFilter('newsletter', this)">Newsletter</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar">Fetching...</div>
+
+<div class="content-area">
+
+  <!-- Futures -->
+  <div id="futuresSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule"><span>CME Futures</span></div>
+    <div id="futuresContent" class="futures-grid"></div>
+  </div>
+
+  <!-- Movers -->
+  <div id="trendingSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule">
+      <span id="trendingLabel">Top Gainers</span>
+      <div style="display:flex;gap:6px;margin-left:auto;">
+        <button id="tabGain" class="filter-btn active" onclick="switchTab('gainers')">Gainers</button>
+        <button id="tabLose" class="filter-btn" onclick="switchTab('losers')">Losers</button>
+      </div>
+    </div>
+    <div id="trendingContent" class="ticker-grid"></div>
+  </div>
+
+
+
+  <!-- Fed Watch -->
+  <div id="fedSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule"><span>Fed Watch</span></div>
+    <div id="fedContent" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;"></div>
+  </div>
+
+  <!-- Economic Calendar -->
+  <div id="calendarSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule"><span>Economic Calendar</span></div>
+    <a href="https://www.investing.com/economic-calendar/" target="_blank"
+       style="display:block;background:var(--accent);color:var(--paper);text-align:center;padding:14px;border-radius:2px;text-decoration:none;font-family:'Playfair Display',serif;font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--gold);">
+      Open Economic Calendar &rarr;
+    </a>
+  </div>
+
+  <!-- News -->
+  <div id="contentArea">
+    <div class="placeholder">Tap Pull News to load your morning feeds.</div>
   </div>
 </div>
 
 <script>
-  const TWELVE_KEY = '4fd31bffe6ef43799611d169c7e97ade';
-  const proxyURL = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  // ── DATELINE ──
+  document.getElementById('dateline').textContent = new Date().toLocaleDateString('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+  });
 
-  const FUTURES_CONFIG = [
-    { symbol: 'ES',  name: 'S&P 500',    td: 'ES',   tv: 'CME_MINI:ES1!' },
-    { symbol: 'NQ',  name: 'Nasdaq 100', td: 'NQ',   tv: 'CME_MINI:NQ1!' },
-    { symbol: 'GC',  name: 'Gold',       td: 'GOLD', tv: 'COMEX:GC1!'    },
-    { symbol: 'CL',  name: 'Crude Oil',  td: 'CL',   tv: 'NYMEX:CL1!'    },
-    { symbol: 'RTY', name: 'Russell',    td: 'RTY',  tv: 'CME_MINI:RTY1!'}
+  // ── FEEDS ──
+  const FEEDS = [
+    { name: 'Federal Reserve', url: 'https://www.federalreserve.gov/feeds/press_all.xml', category: 'central-banks' },
+    { name: 'ECB', url: 'https://www.ecb.europa.eu/rss/press.html', category: 'central-banks' },
+    { name: 'Bank of England', url: 'https://www.bankofengland.co.uk/rss/news', category: 'central-banks' },
+    { name: 'Financial Stability Board', url: 'https://www.fsb.org/feed', category: 'central-banks' },
+    { name: 'Exante Data', url: 'https://moneyinsideout.substack.com/feed', category: 'markets' },
+    { name: 'Investing.com', url: 'https://www.investing.com/rss/news.rss', category: 'markets' },
+    { name: 'Yahoo Finance', url: 'https://finance.yahoo.com/news/rssindex', category: 'markets' },
+    { name: 'CNBC Markets', url: 'https://www.cnbc.com/id/20910258/device/rss/rss.html', category: 'markets' },
+    { name: 'Financial Times', url: 'https://ft.com/rss/home', category: 'markets' },
+    { name: 'Nasdaq', url: 'https://www.nasdaq.com/feed/nasdaq-originals/rss.xml', category: 'markets' },
+    { name: 'Benzinga', url: 'https://feeds.benzinga.com/benzinga', category: 'markets' },
+    { name: 'Newsquawk', url: 'https://newsquawk.com/blog/feed.rss', category: 'markets' },
+    { name: 'AP World News', url: 'https://feeds.apnews.com/rss/apf-worldnews', category: 'geopolitics' },
+    { name: 'AP Politics', url: 'https://feeds.apnews.com/rss/apf-politics', category: 'geopolitics' },
+    { name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml', category: 'geopolitics' },
+    { name: 'Foreign Affairs', url: 'https://foreignaffairs.com/rss.xml', category: 'geopolitics' },
+    { name: 'War on the Rocks', url: 'https://warontherocks.com/feed', category: 'geopolitics' },
+    { name: 'The Independent', url: 'https://www.independent.co.uk/news/world/politics/rss', category: 'geopolitics' },
+    { name: 'OilPrice.com', url: 'https://oilprice.com/rss/main', category: 'geopolitics' },
+    { name: 'Alisdair Macdonald', url: 'https://alisdairmacdonald.substack.com/feed', category: 'newsletter' },
   ];
 
-  async function fetchFutures() {
-    const container = document.getElementById('futuresContent');
-    const results = await Promise.all(FUTURES_CONFIG.map(async f => {
-      try {
-        const res = await fetch(proxyURL(`https://api.twelvedata.com/quote?symbol=${f.td}&apikey=${TWELVE_KEY}`));
-        const outer = await res.json();
-        const data = JSON.parse(outer.contents);
-        return { ...f, price: data.close || '—', pct: data.percent_change || '0' };
-      } catch (e) { return { ...f, price: '—', pct: '0' }; }
-    }));
-
-    container.innerHTML = results.map(f => `
-      <div class="future-card ${parseFloat(f.pct) >= 0 ? 'up' : 'down'}" onclick="openChart('${f.tv}', '${f.name}')">
-        <div class="future-sym">${f.symbol}</div>
-        <div style="font-size:11px; opacity:0.6">${f.name}</div>
-        <div class="future-price">${f.price}</div>
-        <div style="font-size:12px">${parseFloat(f.pct) > 0 ? '+' : ''}${f.pct}%</div>
-      </div>
-    `).join('');
-  }
-
-  // ── CHART LOGIC ──
-  function openChart(tvSymbol, displayName) {
-    document.getElementById('modalTitle').textContent = displayName.toUpperCase() + " CONTINUOUS";
-    document.getElementById('chartModal').style.display = 'flex';
-    
-    // Create the TradingView Widget
-    new TradingView.widget({
-      "autosize": true,
-      "symbol": tvSymbol,
-      "interval": "60",
-      "timezone": "Etc/UTC",
-      "theme": "dark",
-      "style": "1",
-      "locale": "en",
-      "toolbar_bg": "#f1f3f6",
-      "enable_publishing": false,
-      "hide_top_toolbar": true,
-      "save_image": false,
-      "container_id": "chart-container"
-    });
-  }
-
-  function closeChart() {
-    document.getElementById('chartModal').style.display = 'none';
-    document.getElementById('chart-container').innerHTML = ''; // Reset container
-  }
-
-  // Close modal if user clicks outside the content box
-  window.onclick = function(event) {
-    const modal = document.getElementById('chartModal');
-    if (event.target == modal) closeChart();
-  }
-
-  fetchFutures();
-</script>
-</body>
-</html>
+  // ── FUTURES CONFIG ── TradingView symbols for each contract
+  const FUTURES = [
+    { symbol: 'ES',  name: 'S&P 500',     tv: 'CME_MINI:ES1!',  yf: 'ES=F',   td: 'ES/USD'  },
+    { symbol: 'NQ',  name: 'Nasdaq 100',  tv: 'CME_MINI:NQ1!',  yf: 'NQ=F',   td: 'NQ/USD'  },
+    { symbol: 'RTY', name: 'Russell 2000',tv: 'CME_MINI:RTY1!', yf: 'RTY=F',  td: 'RTY/USD' },
+    { symbol: 'GC',  name: 'Gold',        tv: 'COMEX:GC1!',     yf: 'GC=F',   td: 'GC/USD'  },
+    { symbol: 'CL',  name: 'Crude Oil',   tv: 'NYMEX:CL1!',     yf: 'CL=F',   td: 'CL/USD'  },
+    { symbol: 'ZB
