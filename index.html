@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>The Open | Professional Dashboard</title>
+<title>The Open | Pro Dashboard</title>
+<script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 
@@ -13,156 +14,121 @@
     --up: #26a69a; --down: #ef5350;
   }
 
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: 'IBM+Plex+Sans', sans-serif; margin: 0; padding: 20px;
-  }
-
-  header { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 20px; }
-  .grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; margin: 0; padding: 20px; }
   
   /* Sections */
   section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 15px; margin-bottom: 20px; }
-  h2 { font-family: 'IBM+Plex+Mono'; font-size: 14px; text-transform: uppercase; color: var(--gold); margin: 0 0 15px 0; }
+  h2 { font-family: 'IBM Plex Mono'; font-size: 14px; text-transform: uppercase; color: var(--gold); margin: 0 0 15px 0; }
 
-  /* Futures & Movers Styling */
-  .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-  .card { padding: 10px; border: 1px solid var(--border); border-radius: 3px; cursor: pointer; transition: 0.2s; }
-  .card:hover { border-color: var(--gold); }
-  .up { color: var(--up); }
-  .down { color: var(--down); }
-  
-  /* RSS Feed */
-  .feed-item { padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .feed-source { font-size: 10px; color: var(--gold); text-transform: uppercase; }
-  .feed-title { font-size: 14px; font-weight: 500; margin: 5px 0; color: #fff; text-decoration: none; display: block; }
-  
-  button { 
-    background: var(--surface2); border: 1px solid var(--border); color: var(--text); 
-    padding: 5px 15px; cursor: pointer; font-family: 'IBM+Plex+Mono'; 
+  /* Futures Cards */
+  .data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .future-card { 
+    padding: 12px; border: 1px solid var(--border); border-radius: 4px; 
+    cursor: pointer; transition: 0.2s; background: var(--surface2);
   }
-  button:hover { background: var(--gold); color: #000; }
+  .future-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+  .up { color: var(--up); } .down { color: var(--down); }
+  .future-sym { font-weight: 600; font-size: 16px; }
+  .future-price { font-family: 'IBM Plex Mono'; font-size: 14px; margin-top: 4px; }
 
-  /* Modal */
-  #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-  .modal-content { width: 80%; margin: 5% auto; background: var(--surface); padding: 20px; }
+  /* Modal Styling */
+  .modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 9999; justify-content: center; align-items: center;
+  }
+  .modal-content {
+    width: 90%; max-width: 1000px; background: var(--surface); 
+    border: 1px solid var(--gold); border-radius: 8px; padding: 20px; position: relative;
+  }
+  .close-btn {
+    position: absolute; top: 10px; right: 20px; font-size: 30px; 
+    color: var(--gold); cursor: pointer; font-family: 'IBM Plex Mono';
+  }
+  #chart-container { height: 500px; width: 100%; }
 </style>
 </head>
 <body>
 
-<header>
-  <div>
-    <div id="headerDate" style="font-family: 'IBM+Plex+Mono'; font-size: 12px; color: var(--gold);"></div>
-    <div id="headerTime" style="font-size: 24px; font-weight: 600;"></div>
+<section>
+  <h2>Global Futures (Click to expand)</h2>
+  <div id="futuresContent" class="data-grid"></div>
+</section>
+
+<div id="chartModal" class="modal-overlay">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeChart()">&times;</span>
+    <h2 id="modalTitle" style="margin-top:0">CHART</h2>
+    <div id="chart-container"></div>
   </div>
-  <div style="text-align: right;">
-    <button onclick="fetchAllData()">REFRESH DASHBOARD</button>
-  </div>
-</header>
-
-<div class="grid">
-  <main>
-    <section id="futuresSection">
-      <h2>Global Futures (24/5)</h2>
-      <div id="futuresContent" class="data-grid"></div>
-    </section>
-
-    <section id="feedSection">
-      <h2>Macro & Geopolitical Intelligence</h2>
-      <div id="feedContent"></div>
-    </section>
-  </main>
-
-  <aside>
-    <section id="trendingSection">
-      <h2 id="trendingLabel">Market Movers</h2>
-      <div id="trendingContent"></div>
-    </section>
-  </aside>
 </div>
 
 <script>
-  // API Config
   const TWELVE_KEY = '4fd31bffe6ef43799611d169c7e97ade';
-  const FMP_KEY = '6hoVPhx5JJ6zXA6L32kmzpbOwUkivBQk';
+  const proxyURL = (url) => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
 
-  const FUTURES = [
-    { symbol: 'ES', name: 'S&P 500', yf: 'ES=F' },
-    { symbol: 'NQ', name: 'Nasdaq 100', yf: 'NQ=F' },
-    { symbol: 'GC', name: 'Gold', yf: 'GC=F' },
-    { symbol: 'CL', name: 'Crude Oil', yf: 'CL=F' }
+  const FUTURES_CONFIG = [
+    { symbol: 'ES',  name: 'S&P 500',    td: 'ES',   tv: 'CME_MINI:ES1!' },
+    { symbol: 'NQ',  name: 'Nasdaq 100', td: 'NQ',   tv: 'CME_MINI:NQ1!' },
+    { symbol: 'GC',  name: 'Gold',       td: 'GOLD', tv: 'COMEX:GC1!'    },
+    { symbol: 'CL',  name: 'Crude Oil',  td: 'CL',   tv: 'NYMEX:CL1!'    },
+    { symbol: 'RTY', name: 'Russell',    td: 'RTY',  tv: 'CME_MINI:RTY1!'}
   ];
 
-  // Market State Detection
-  function getMarketState() {
-    const now = new Date();
-    const estHour = (now.getUTCHours() - 5 + 24) % 24; 
-    const isRegularHours = estHour >= 9 && estHour < 16 && now.getUTCDay() !== 0 && now.getUTCDay() !== 6;
-    return { isRegularHours };
-  }
-
-  // Clock
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('headerDate').textContent = now.toDateString().toUpperCase();
-    document.getElementById('headerTime').textContent = now.toLocaleTimeString();
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  // Fetch Futures with Fallback Logic
   async function fetchFutures() {
     const container = document.getElementById('futuresContent');
-    container.innerHTML = 'Loading...';
-
-    const results = await Promise.all(FUTURES.map(async f => {
+    const results = await Promise.all(FUTURES_CONFIG.map(async f => {
       try {
-        const tdSym = f.yf.replace('=F', ''); 
-        const res = await fetch(`https://api.twelvedata.com/quote?symbol=${tdSym}&apikey=${TWELVE_KEY}`);
-        const json = await res.json();
-        return { 
-            ...f, 
-            price: json.close || '—', 
-            pct: json.percent_change || '0' 
-        };
+        const res = await fetch(proxyURL(`https://api.twelvedata.com/quote?symbol=${f.td}&apikey=${TWELVE_KEY}`));
+        const outer = await res.json();
+        const data = JSON.parse(outer.contents);
+        return { ...f, price: data.close || '—', pct: data.percent_change || '0' };
       } catch (e) { return { ...f, price: '—', pct: '0' }; }
     }));
 
     container.innerHTML = results.map(f => `
-      <div class="card ${parseFloat(f.pct) >= 0 ? 'up' : 'down'}">
-        <div style="font-weight:600">${f.symbol}</div>
-        <div style="font-size:12px">${f.price}</div>
-        <div style="font-size:10px">${f.pct}%</div>
+      <div class="future-card ${parseFloat(f.pct) >= 0 ? 'up' : 'down'}" onclick="openChart('${f.tv}', '${f.name}')">
+        <div class="future-sym">${f.symbol}</div>
+        <div style="font-size:11px; opacity:0.6">${f.name}</div>
+        <div class="future-price">${f.price}</div>
+        <div style="font-size:12px">${parseFloat(f.pct) > 0 ? '+' : ''}${f.pct}%</div>
       </div>
     `).join('');
   }
 
-  // Fetch Movers (After-Hours Aware)
-  async function fetchMovers() {
-    const container = document.getElementById('trendingContent');
-    const { isRegularHours } = getMarketState();
-    const path = isRegularHours ? 'stock_market/gainers' : 'stock_market/post_market/gainers';
-    document.getElementById('trendingLabel').textContent = isRegularHours ? 'Top Gainers' : 'After-Hours Gainers';
-
-    try {
-      const res = await fetch(`https://financialmodelingprep.com/api/v3/${path}?apikey=${FMP_KEY}`);
-      const data = await res.json();
-      container.innerHTML = data.slice(0, 10).map(s => `
-        <div class="feed-item">
-          <div class="feed-source">${s.symbol} | $${parseFloat(s.price).toFixed(2)}</div>
-          <div class="up" style="font-size:13px; font-weight:600">+${parseFloat(s.changesPercentage).toFixed(2)}%</div>
-        </div>
-      `).join('');
-    } catch (e) { container.innerHTML = 'Movers Unavailable'; }
+  // ── CHART LOGIC ──
+  function openChart(tvSymbol, displayName) {
+    document.getElementById('modalTitle').textContent = displayName.toUpperCase() + " CONTINUOUS";
+    document.getElementById('chartModal').style.display = 'flex';
+    
+    // Create the TradingView Widget
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": tvSymbol,
+      "interval": "60",
+      "timezone": "Etc/UTC",
+      "theme": "dark",
+      "style": "1",
+      "locale": "en",
+      "toolbar_bg": "#f1f3f6",
+      "enable_publishing": false,
+      "hide_top_toolbar": true,
+      "save_image": false,
+      "container_id": "chart-container"
+    });
   }
 
-  function fetchAllData() {
-    fetchFutures();
-    fetchMovers();
+  function closeChart() {
+    document.getElementById('chartModal').style.display = 'none';
+    document.getElementById('chart-container').innerHTML = ''; // Reset container
   }
 
-  // Init
-  window.onload = fetchAllData;
+  // Close modal if user clicks outside the content box
+  window.onclick = function(event) {
+    const modal = document.getElementById('chartModal');
+    if (event.target == modal) closeChart();
+  }
+
+  fetchFutures();
 </script>
 </body>
 </html>
