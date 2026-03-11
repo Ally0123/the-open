@@ -3,21 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>The Open | Terminal</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<title>Morning Briefing</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CZHDNBP96B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CZHDNBP96B');
+</script>
 <style>
+  /* Styles imported from the-open-3.html */
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
   :root {
-    --bg: #0d0d0d;
-    --surface: #141414;
-    --border: #2a2a2a;
-    --gold: #c8a84b;
-    --dim: #888;
-    --text: #d4d4d4;
-    --bright: #f0f0f0;
-    --green: #00c076;
-    --red: #ff4444;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
+    --bg:       #0d0d0d;
+    --surface:  #141414;
+    --surface2: #1a1a1a;
+    --border:   #2a2a2a;
+    --border2:  #333;
+    --gold:     #c8a84b;
+    --gold2:    #e8c96a;
+    --muted:    #555;
+    --dim:      #888;
+    --text:     #d4d4d4;
+    --bright:   #f0f0f0;
+    --green:    #00c076;
+    --red:      #ff4444;
+    --blue:     #4a9eff;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,27 +41,37 @@
     color: var(--text);
     font-family: var(--sans);
     font-size: 13px;
+    min-height: 100vh;
     padding-bottom: 60px;
   }
 
   /* ── HEADER ── */
-  .header {
+  .masthead {
     background: var(--surface);
     border-bottom: 1px solid var(--gold);
-    padding: 0 16px;
+    padding: 12px 16px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    height: 52px;
+    text-align: center;
   }
 
-  .logo-title {
+  .masthead h1 {
     font-family: var(--mono);
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--gold);
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+
+  .dateline {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 4px;
   }
 
   /* ── PULSE STRIP ── */
@@ -58,17 +82,23 @@
     overflow-x: auto;
     scrollbar-width: none;
   }
+  .pulse-strip::-webkit-scrollbar { display: none; }
 
   .pulse-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     padding: 8px 14px;
     border-right: 1px solid var(--border);
-    min-width: 90px;
+    min-width: 80px;
   }
+  .pulse-item:last-child { border-right: none; }
 
   .pulse-label {
     font-family: var(--mono);
     font-size: 0.55rem;
-    color: var(--dim);
+    letter-spacing: 0.14em;
+    color: var(--muted);
     text-transform: uppercase;
   }
 
@@ -79,143 +109,349 @@
     color: var(--bright);
   }
 
-  /* ── ACTION BAR ── */
-  .action-bar {
+  .pulse-change {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+  }
+  .pulse-change.up { color: var(--green); }
+  .pulse-change.down { color: var(--red); }
+  .pulse-change.neutral { color: var(--muted); }
+
+  /* ── FEAR & GREED ── */
+  .fg-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fg-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fg-track {
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(to right, #ff3333, #ff8800, #ffcc00, #00bb66, #008844);
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .fg-needle {
+    position: absolute;
+    top: -5px;
+    width: 14px;
+    height: 14px;
+    background: var(--bright);
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.8s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 6px rgba(200,168,75,0.4);
+  }
+
+  .fg-score {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--bright);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  .fg-sentiment {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 82px;
+    text-align: right;
+  }
+
+  /* ── COUNTDOWN ── */
+  .countdown-bar {
+    background: #111;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .countdown-event {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .countdown-timer {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── CONTROLS ── */
+  .controls {
     background: var(--surface);
     border-bottom: 1px solid var(--border);
     padding: 10px 12px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 6px;
   }
 
-  .btn {
-    background: #1a1a1a;
+  .btn-row { display: flex; gap: 6px; }
+
+  .run-btn {
+    flex: 1;
+    background: var(--surface2);
     color: var(--dim);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border2);
     font-family: var(--mono);
     font-size: 0.65rem;
-    padding: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    padding: 10px 6px;
     cursor: pointer;
-    text-align: center;
     border-radius: 2px;
+    transition: all 0.15s;
+    text-align: center;
+    text-decoration: none;
   }
 
-  .btn.primary {
-    border-color: var(--gold);
-    color: var(--gold);
-  }
+  .run-btn:hover { background: #222; border-color: var(--gold); color: var(--gold); }
+  .run-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  .btn.claude {
-    border-color: #c87040;
-    color: #e0904a;
-  }
+  .run-btn.secondary { background: #1a1400; border-color: var(--gold); color: var(--gold); }
 
-  /* ── CONTENT ── */
-  .content { padding: 12px; max-width: 900px; margin: 0 auto; }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 16px 0 8px;
-  }
-
-  .section-title {
+  .filter-row { display: flex; flex-wrap: wrap; gap: 4px; }
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
     font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--gold);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
+    padding: 4px 9px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.12s;
+  }
+  .filter-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #000;
     font-weight: 600;
   }
 
-  .divider { flex: 1; height: 1px; background: var(--border); }
+  /* ── STATUS ── */
+  .status-bar {
+    background: var(--gold);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-align: center;
+    padding: 5px;
+    text-transform: uppercase;
+    display: none;
+    font-weight: 600;
+  }
+  .status-bar.visible { display: block; }
+
+  /* ── CONTENT ── */
+  .content-area {
+    padding: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .feed-section { margin-bottom: 16px; }
+
+  .section-rule {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-rule span {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  /* ── GRID STYLING ── */
+  .futures-grid, .ticker-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .future-card, .ticker-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--border);
+    padding: 10px 11px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.12s;
+    border-radius: 2px;
+  }
+
+  .future-card:hover, .ticker-card:hover { border-color: var(--gold); background: var(--surface2); }
+  .future-card.up, .ticker-card.gainer { border-top-color: var(--green); }
+  .future-card.down, .ticker-card.loser { border-top-color: var(--red); }
+
+  .future-symbol, .ticker-symbol {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bright);
+  }
+
+  .future-name, .ticker-name {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  .future-price, .ticker-price {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--text);
+    margin-top: 6px;
+  }
+
+  .future-pct, .ticker-pct {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  .future-pct.up, .ticker-pct.up { color: var(--green); }
+  .future-pct.down, .ticker-pct.down { color: var(--red); }
 
   /* ── NEWS ITEMS ── */
+  .news-items { display: flex; flex-direction: column; gap: 4px; }
   .news-item {
     background: var(--surface);
     border: 1px solid var(--border);
-    margin-bottom: 4px;
-    padding: 10px;
     border-left: 2px solid var(--border);
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: border-color 0.12s;
+    border-radius: 1px;
   }
-
-  .news-item:hover { border-left-color: var(--gold); }
-
-  .news-headline { font-size: 0.85rem; color: var(--bright); line-height: 1.4; }
-  .news-source { font-family: var(--mono); font-size: 0.6rem; color: var(--gold); text-transform: uppercase; margin-top: 4px; }
+  .news-item:hover { border-left-color: var(--gold); background: var(--surface2); }
+  .news-item .headline { font-size: 0.8rem; color: var(--text); line-height: 1.4; }
+  .news-item .summary {
+    font-size: 0.72rem;
+    color: var(--dim);
+    line-height: 1.4;
+    margin-top: 5px;
+    display: none;
+  }
+  .news-item.expanded .summary { display: block; }
+  .news-item .meta { font-family: var(--mono); font-size: 0.58rem; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+  .news-item .read-more { font-family: var(--mono); font-size: 0.58rem; color: var(--gold); text-decoration: none; }
 
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="logo-text">
-    <span class="logo-title">The Open</span>
-  </div>
-  <div style="text-align: right;">
-    <div id="headerDate" style="font-size: 0.6rem; color: var(--dim); font-family: var(--mono);"></div>
-    <div id="headerTime" style="font-size: 0.8rem; color: var(--gold); font-family: var(--mono); font-weight: 600;"></div>
-  </div>
+<div class="masthead">
+  <h1>Morning Briefing</h1>
+  <div class="dateline" id="dateline"></div>
 </div>
 
 <div class="pulse-strip" id="pulseStrip">
-  </div>
-
-<div class="action-bar">
-  <button class="btn primary" onclick="fetchAllFeeds()">▶ Pull Intel</button>
-  <button class="btn primary" onclick="fetchFutures()">Futures</button>
-  <button class="btn" onclick="fetchFedWatch()">Fed Watch</button>
-  <button class="btn claude" onclick="analyseHeadlines()">◆ Claude Synthesis</button>
+  <div class="pulse-item"><div class="pulse-label">VIX</div><div class="pulse-value" id="pVIX">—</div><div class="pulse-change neutral" id="pVIXc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">DXY</div><div class="pulse-value" id="pDXY">—</div><div class="pulse-change neutral" id="pDXYc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">BTC</div><div class="pulse-value" id="pBTC">—</div><div class="pulse-change neutral" id="pBTCc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">Gold</div><div class="pulse-value" id="pGLD">—</div><div class="pulse-change neutral" id="pGLDc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">Oil</div><div class="pulse-value" id="pOIL">—</div><div class="pulse-change neutral" id="pOILc">—</div></div>
+  <div class="pulse-item"><div class="pulse-label">10Y</div><div class="pulse-value" id="p10Y">—</div><div class="pulse-change neutral" id="p10Yc">—</div></div>
 </div>
 
-<div class="content">
-  <div id="futuresSection" style="display:none;">
-    <div class="section-header"><span class="section-title">CME Futures</span><div class="divider"></div></div>
-    <div id="futuresContent" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;"></div>
+<div class="fg-bar">
+  <div class="fg-label">F&amp;G</div>
+  <div class="fg-track"><div class="fg-needle" id="fgNeedle" style="left:50%"></div></div>
+  <div class="fg-score" id="fgScore">—</div>
+  <div class="fg-sentiment" id="fgSentiment">Loading...</div>
+</div>
+
+<div class="countdown-bar">
+  <div class="countdown-event" id="countdownEvent">Next Event: Loading...</div>
+  <div class="countdown-timer" id="countdownTimer">--:--:--</div>
+</div>
+
+<div class="controls">
+  <div class="btn-row">
+    <button class="run-btn secondary" id="newsBtn" onclick="fetchAllFeeds()">Pull News</button>
+    <button class="run-btn" id="calBtn" onclick="toggleCalendar()">Calendar</button>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" id="fedBtn" onclick="fetchFedWatch()">Fed Watch</button>
+    <a href="https://alisdairmacdonald.substack.com" target="_blank" class="run-btn" style="text-decoration:none;">Newsletter &rarr;</a>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" id="futuresBtn" onclick="fetchFutures()">Load Futures</button>
+    <button class="run-btn" id="trendingBtn" onclick="fetchTrending()">Top Movers</button>
+  </div>
+  <div class="btn-row">
+    <button class="run-btn" onclick="analyseHeadlines()" style="border-color:#c87040; color:#e0904a;">Claude Analysis</button>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-btn" onclick="setFilter('central-banks', this)">Central Banks</button>
+    <button class="filter-btn" onclick="setFilter('markets', this)">Markets</button>
+    <button class="filter-btn" onclick="setFilter('geopolitics', this)">Geopolitics</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar">Fetching...</div>
+
+<div class="content-area">
+  <div id="futuresSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule"><span>CME Futures</span></div>
+    <div id="futuresContent" class="futures-grid"></div>
   </div>
 
-  <div class="section-header"><span class="section-title">Macro Feed</span><div class="divider"></div></div>
-  <div id="contentArea">
-    <div style="text-align:center; padding: 40px; color: var(--dim); font-family: var(--mono); font-size: 0.7rem;">
-      SYSTEM_IDLE: AWAITING_INPUT
+  <div id="trendingSection" style="display:none;margin-bottom:22px;">
+    <div class="section-rule"><span id="trendingLabel">Top Gainers</span></div>
+    <div id="trendingContent" class="ticker-grid"></div>
+  </div>
+
+  <div id="newsSection">
+    <div class="section-rule"><span>The Wire</span></div>
+    <div id="newsContent" class="news-items">
+      <div class="placeholder">Awaiting pulse...</div>
     </div>
   </div>
 </div>
 
 <script>
-  // Clock Logic
-  function updateClock() {
-    const now = new Date();
-    document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }).toUpperCase();
-    document.getElementById('headerTime').textContent = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
-
-  // API placeholders (keeping your existing functional logic)
-  async function fetchAllFeeds() {
-    const area = document.getElementById('contentArea');
-    area.innerHTML = '<div style="padding:20px; font-family:var(--mono); font-size:0.7rem;">INITIATING_SIGNAL_SCAN...</div>';
-    // Your existing RSS logic goes here
-  }
-
-  async function fetchFutures() {
-    document.getElementById('futuresSection').style.display = 'block';
-    // Your existing Yahoo/TwelveData logic goes here
-  }
-
-  // Simplified render example for news
-  function renderNews(items) {
-    const html = items.map(item => `
-      <div class="news-item">
-        <div class="news-headline">${item.title}</div>
-        <div class="news-source">${item.source} // ${item.category}</div>
-      </div>
-    `).join('');
-    document.getElementById('contentArea').innerHTML = html;
-  }
+  /* [Keep all your original Javascript from morning-briefing-personal-4.html here] */
 </script>
+
 </body>
 </html>
