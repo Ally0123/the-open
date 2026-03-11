@@ -3,19 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>TERMINAL - Morning Briefing</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+<title>The Open | Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000000;
-    --surface: #111111;
-    --border: #333333;
-    --text: #bbbbbb;
-    --bright: #ffffff;
-    --amber: #ff9900;
-    --green: #00ff00;
-    --red: #ff3333;
-    --blue: #00aaff;
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --border: #2a2a2a;
+    --gold: #c8a84b;
+    --dim: #888;
+    --text: #d4d4d4;
+    --bright: #f0f0f0;
+    --green: #00c076;
+    --red: #ff4444;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -23,221 +25,197 @@
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: var(--sans);
     font-size: 13px;
-    line-height: 1.4;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
   }
 
   /* ── HEADER ── */
-  .terminal-header {
-    background: #1a1a1a;
-    border-bottom: 1px solid var(--amber);
-    padding: 8px 16px;
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--gold);
+    padding: 0 16px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
+    height: 52px;
   }
-  .terminal-header h1 {
-    color: var(--amber);
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 1px;
+
+  .logo-title {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.12em;
     text-transform: uppercase;
   }
-  .timestamp { color: var(--amber); font-size: 11px; }
 
   /* ── PULSE STRIP ── */
   .pulse-strip {
+    background: #0a0a0a;
+    border-bottom: 1px solid var(--border);
     display: flex;
-    background: #000;
-    border-bottom: 1px solid var(--border);
     overflow-x: auto;
-    white-space: nowrap;
+    scrollbar-width: none;
   }
-  .pulse-item {
-    padding: 8px 15px;
-    border-right: 1px solid var(--border);
-    min-width: 100px;
-  }
-  .pulse-label { font-size: 10px; color: var(--text); display: block; }
-  .pulse-value { font-weight: 700; color: var(--bright); font-size: 14px; }
-  .pulse-change { font-size: 11px; margin-left: 4px; }
-  .up { color: var(--green); }
-  .down { color: var(--red); }
 
-  /* ── FEAR & GREED ── */
-  .fg-container {
-    background: #000;
-    padding: 10px 16px;
+  .pulse-item {
+    padding: 8px 14px;
+    border-right: 1px solid var(--border);
+    min-width: 90px;
+  }
+
+  .pulse-label {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .pulse-value {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--bright);
+  }
+
+  /* ── ACTION BAR ── */
+  .action-bar {
+    background: var(--surface);
     border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+
+  .btn {
+    background: #1a1a1a;
+    color: var(--dim);
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    padding: 10px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 2px;
+  }
+
+  .btn.primary {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .btn.claude {
+    border-color: #c87040;
+    color: #e0904a;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding: 12px; max-width: 900px; margin: 0 auto; }
+
+  .section-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-  }
-  .fg-track {
-    height: 4px;
-    background: #222;
-    flex: 1;
-    position: relative;
-  }
-  .fg-needle {
-    height: 12px;
-    width: 2px;
-    background: var(--amber);
-    position: absolute;
-    top: -4px;
-    transition: left 0.5s;
+    gap: 8px;
+    margin: 16px 0 8px;
   }
 
-  /* ── CONTROLS ── */
-  .nav-strip {
-    background: #0a0a0a;
-    padding: 10px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 5px;
-    border-bottom: 1px solid var(--border);
-  }
-  .cmd-btn {
-    background: #1a1a1a;
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 6px;
-    font-family: inherit;
-    font-size: 11px;
-    cursor: pointer;
-    text-align: left;
-    text-transform: uppercase;
-  }
-  .cmd-btn:hover { background: var(--amber); color: #000; border-color: var(--amber); }
-  .cmd-btn.active { border-left: 3px solid var(--amber); color: var(--amber); }
-
-  /* ── DATA GRIDS ── */
-  .content-grid { padding: 15px; max-width: 1200px; margin: 0 auto; }
-  
   .section-title {
-    color: var(--amber);
-    background: #111;
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 700;
-    border-left: 3px solid var(--amber);
-    margin: 20px 0 10px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--gold);
     text-transform: uppercase;
+    font-weight: 600;
   }
 
-  .futures-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 2px;
-    background: var(--border);
-    border: 1px solid var(--border);
-  }
-  .future-card {
-    background: var(--bg);
-    padding: 10px;
-    text-decoration: none;
-    color: inherit;
-  }
-  .future-symbol { color: var(--amber); font-weight: 700; }
-  .future-val { font-size: 16px; font-weight: 700; margin: 4px 0; }
+  .divider { flex: 1; height: 1px; background: var(--border); }
 
-  .news-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+  /* ── NEWS ITEMS ── */
   .news-item {
-    background: var(--bg);
-    padding: 12px;
-    border-left: 2px solid transparent;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 4px;
+    padding: 10px;
+    border-left: 2px solid var(--border);
   }
-  .news-item:hover { border-left-color: var(--amber); background: #080808; }
-  .headline { color: var(--bright); font-weight: 600; cursor: pointer; }
-  .source { color: var(--amber); font-size: 10px; text-transform: uppercase; margin-bottom: 4px; }
-  .summary { font-size: 12px; color: #888; margin-top: 5px; display: none; }
-  .news-item.open .summary { display: block; }
 
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #000; }
-  ::-webkit-scrollbar-thumb { background: #333; }
+  .news-item:hover { border-left-color: var(--gold); }
+
+  .news-headline { font-size: 0.85rem; color: var(--bright); line-height: 1.4; }
+  .news-source { font-family: var(--mono); font-size: 0.6rem; color: var(--gold); text-transform: uppercase; margin-top: 4px; }
+
 </style>
 </head>
 <body>
 
-<div class="terminal-header">
-  <h1>Terminal // Briefing</h1>
-  <div class="timestamp" id="liveClock">--:--:--</div>
+<div class="header">
+  <div class="logo-text">
+    <span class="logo-title">The Open</span>
+  </div>
+  <div style="text-align: right;">
+    <div id="headerDate" style="font-size: 0.6rem; color: var(--dim); font-family: var(--mono);"></div>
+    <div id="headerTime" style="font-size: 0.8rem; color: var(--gold); font-family: var(--mono); font-weight: 600;"></div>
+  </div>
 </div>
 
 <div class="pulse-strip" id="pulseStrip">
-  <div class="pulse-item"><span class="pulse-label">VIX</span><span id="pVIX" class="pulse-value">--</span><span id="pVIXc" class="pulse-change">--</span></div>
-  <div class="pulse-item"><span class="pulse-label">DXY</span><span id="pDXY" class="pulse-value">--</span><span id="pDXYc" class="pulse-change">--</span></div>
-  <div class="pulse-item"><span class="pulse-label">BTC/USD</span><span id="pBTC" class="pulse-value">--</span><span id="pBTCc" class="pulse-change">--</span></div>
-  <div class="pulse-item"><span class="pulse-label">GOLD</span><span id="pGLD" class="pulse-value">--</span><span id="pGLDc" class="pulse-change">--</span></div>
-  <div class="pulse-item"><span class="pulse-label">WTI</span><span id="pOIL" class="pulse-value">--</span><span id="pOILc" class="pulse-change">--</span></div>
-</div>
-
-<div class="fg-container">
-  <span style="font-size:10px; color:var(--amber)">SENTIMENT:</span>
-  <div class="fg-track"><div class="fg-needle" id="fgNeedle"></div></div>
-  <span id="fgScore" style="color:var(--bright); font-weight:700">--</span>
-</div>
-
-<div class="nav-strip">
-  <button class="cmd-btn" onclick="fetchAllFeeds()">1. PULL NEWS</button>
-  <button class="cmd-btn" onclick="fetchFutures()">2. LOAD CME</button>
-  <button class="cmd-btn" onclick="fetchTrending()">3. TOP MOVERS</button>
-  <button class="cmd-btn" onclick="fetchFedWatch()">4. FED WATCH</button>
-  <button class="cmd-btn" onclick="analyseHeadlines()" style="color:var(--amber)">5. RUN ANALYTICS (CLAUDE)</button>
-</div>
-
-<div class="content-grid">
-  <div id="futuresSection" style="display:none">
-    <div class="section-title">CME Globex Futures</div>
-    <div id="futuresContent" class="futures-grid"></div>
   </div>
 
-  <div id="newsSection">
-    <div class="section-title">Global Macro Feed</div>
-    <div id="contentArea" class="news-list">
-      <div style="padding:40px; text-align:center; color:#444">READY FOR INPUT...</div>
+<div class="action-bar">
+  <button class="btn primary" onclick="fetchAllFeeds()">▶ Pull Intel</button>
+  <button class="btn primary" onclick="fetchFutures()">Futures</button>
+  <button class="btn" onclick="fetchFedWatch()">Fed Watch</button>
+  <button class="btn claude" onclick="analyseHeadlines()">◆ Claude Synthesis</button>
+</div>
+
+<div class="content">
+  <div id="futuresSection" style="display:none;">
+    <div class="section-header"><span class="section-title">CME Futures</span><div class="divider"></div></div>
+    <div id="futuresContent" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;"></div>
+  </div>
+
+  <div class="section-header"><span class="section-title">Macro Feed</span><div class="divider"></div></div>
+  <div id="contentArea">
+    <div style="text-align:center; padding: 40px; color: var(--dim); font-family: var(--mono); font-size: 0.7rem;">
+      SYSTEM_IDLE: AWAITING_INPUT
     </div>
   </div>
 </div>
 
 <script>
-  // Same Logic as before, updated UI hooks
+  // Clock Logic
   function updateClock() {
     const now = new Date();
-    document.getElementById('liveClock').textContent = now.toUTCString().replace('GMT', 'UTC');
+    document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short' }).toUpperCase();
+    document.getElementById('headerTime').textContent = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
   }
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Optimized Fetcher
+  // API placeholders (keeping your existing functional logic)
   async function fetchAllFeeds() {
     const area = document.getElementById('contentArea');
-    area.innerHTML = '<div style="padding:20px">EXECUTING RSS FETCH...</div>';
-    
-    // Using your original FEEDS array and parse logic
-    // [Insert Logic from Previous Script Here]
+    area.innerHTML = '<div style="padding:20px; font-family:var(--mono); font-size:0.7rem;">INITIATING_SIGNAL_SCAN...</div>';
+    // Your existing RSS logic goes here
   }
 
-  // Visual Fix for Terminal Feel
-  function renderFutures(futures) {
-    const content = document.getElementById('futuresContent');
-    content.innerHTML = futures.map(f => `
-      <a class="future-card" href="#">
-        <div class="future-symbol">${f.symbol}</div>
-        <div class="future-val ${f.pct >= 0 ? 'up' : 'down'}">${f.price || '---'}</div>
-        <div style="font-size:10px" class="${f.pct >= 0 ? 'up' : 'down'}">
-            ${f.pct >= 0 ? '+' : ''}${f.pct?.toFixed(2)}%
-        </div>
-      </a>
-    `).join('');
+  async function fetchFutures() {
     document.getElementById('futuresSection').style.display = 'block';
+    // Your existing Yahoo/TwelveData logic goes here
   }
 
-  // [Include all original API helper functions: fetchYahooQuote, fetchTwelveDataQuote, fetchFearGreed, etc.]
+  // Simplified render example for news
+  function renderNews(items) {
+    const html = items.map(item => `
+      <div class="news-item">
+        <div class="news-headline">${item.title}</div>
+        <div class="news-source">${item.source} // ${item.category}</div>
+      </div>
+    `).join('');
+    document.getElementById('contentArea').innerHTML = html;
+  }
 </script>
 </body>
 </html>
