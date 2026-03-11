@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Open</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CZHDNBP96B"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CZHDNBP96B');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg:       #0d0d0d;
+    --surface:  #141414;
+    --surface2: #1a1a1a;
+    --border:   #2a2a2a;
+    --border2:  #333;
+    --gold:     #c8a84b;
+    --gold2:    #e8c96a;
+    --muted:    #555;
+    --dim:      #888;
+    --text:     #d4d4d4;
+    --bright:   #f0f0f0;
+    --green:    #00c076;
+    --red:      #ff4444;
+    --blue:     #4a9eff;
+    --mono:     'IBM Plex Mono', monospace;
+    --sans:     'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 13px;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--gold);
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+
+  .logo-title {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .logo-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .header-date {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .header-time {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+
+  
+
+  /* ── FEAR & GREED ── */
+  .fg-row {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 7px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .fg-label {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .fg-track {
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(to right, #ff3333, #ff8800, #ffcc00, #00bb66, #008844);
+    border-radius: 2px;
+    position: relative;
+  }
+
+  .fg-needle {
+    position: absolute;
+    top: -5px;
+    width: 14px;
+    height: 14px;
+    background: var(--bright);
+    border: 2px solid var(--bg);
+    border-radius: 50%;
+    transform: translateX(-50%);
+    transition: left 0.8s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 6px rgba(200,168,75,0.4);
+  }
+
+  .fg-score {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--bright);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  .fg-sentiment {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    min-width: 82px;
+    text-align: right;
+  }
+
+  /* ── COUNTDOWN ── */
+  .countdown-row {
+    background: #111;
+    border-bottom: 1px solid var(--border);
+    padding: 6px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .countdown-event {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .countdown-timer {
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── ACTION BAR ── */
+  .action-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .btn-row { display: flex; gap: 6px; }
+
+  .btn {
+    flex: 1;
+    background: var(--surface2);
+    color: var(--dim);
+    border: 1px solid var(--border2);
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 6px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn:hover { background: #222; border-color: var(--gold); color: var(--gold); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .btn.primary {
+    background: #1a1400;
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+  .btn.primary:hover { background: #2a2000; }
+
+  .btn.claude {
+    background: #1a0e00;
+    border-color: #c87040;
+    color: #e0904a;
+    font-weight: 600;
+  }
+  .btn.claude:hover { background: #241400; border-color: #e0904a; }
+
+  .btn.active {
+    background: #1a1400;
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* ── FILTER ROW ── */
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 9px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.12s;
+  }
+
+  .filter-btn:hover { border-color: var(--gold); color: var(--dim); }
+  .filter-btn.active { background: var(--gold); border-color: var(--gold); color: #000; font-weight: 600; }
+
+  /* ── STATUS ── */
+  .status-bar {
+    background: var(--gold);
+    color: #000;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-align: center;
+    padding: 5px;
+    text-transform: uppercase;
+    display: none;
+    font-weight: 600;
+  }
+  .status-bar.visible { display: block; }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 12px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  /* ── FUTURES GRID ── */
+  .futures-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .future-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--border);
+    padding: 10px 11px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.12s;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+
+  .future-card:hover { background: var(--surface2); border-color: var(--gold); }
+  .future-card.up   { border-top-color: var(--green); }
+  .future-card.down { border-top-color: var(--red); }
+  .future-card.flat { border-top-color: var(--muted); }
+
+  .future-sym {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bright);
+    letter-spacing: 0.06em;
+  }
+
+  .future-name {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 1px;
+    letter-spacing: 0.02em;
+  }
+
+  .future-price {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-top: 6px;
+  }
+
+  .future-pct {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .future-pct.up   { color: var(--green); }
+  .future-pct.down { color: var(--red); }
+  .future-pct.flat { color: var(--muted); }
+
+  /* ── MOVERS GRID ── */
+  .movers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .mover-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    padding: 9px 11px;
+    text-decoration: none;
+    display: block;
+    transition: all 0.12s;
+    border-radius: 2px;
+  }
+
+  .mover-card:hover { background: var(--surface2); }
+  .mover-card.up   { border-left-color: var(--green); }
+  .mover-card.down { border-left-color: var(--red); }
+
+  .mover-sym {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--bright);
+  }
+
+  .mover-name {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-top: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mover-pct {
+    font-family: var(--mono);
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-top: 5px;
+  }
+  .mover-pct.up   { color: var(--green); }
+  .mover-pct.down { color: var(--red); }
+
+  .mover-meta {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── NEWS ── */
+  .feed-section { margin-bottom: 16px; }
+
+  .news-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .news-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--border);
+    padding: 9px 12px;
+    cursor: pointer;
+    transition: border-color 0.12s;
+    border-radius: 1px;
+  }
+
+  .news-item:hover { border-left-color: var(--gold); background: var(--surface2); }
+
+  .news-headline {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.4;
+  }
+
+  .news-summary {
+    font-size: 0.72rem;
+    color: var(--dim);
+    line-height: 1.4;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .news-item.expanded .news-summary { display: block; }
+
+  .news-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+
+  .news-source {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .news-read {
+    font-family: var(--mono);
+    font-size: 0.58rem;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── FED CARDS ── */
+  .fed-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .fed-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 2px;
+  }
+
+  .fed-lbl {
+    font-family: var(--mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .fed-val {
+    font-family: var(--mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .fed-sub {
+    font-size: 0.62rem;
+    color: var(--dim);
+    margin-top: 2px;
+  }
+
+  /* ── PLACEHOLDER ── */
+  .placeholder {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    text-align: center;
+    padding: 20px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── CALENDAR LINK ── */
+  .cal-link {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    text-align: center;
+    padding: 14px;
+    border-radius: 2px;
+    text-decoration: none;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    transition: background 0.15s;
+  }
+  .cal-link:hover { background: #1a1400; }
+
+  .section-wrap { margin-bottom: 16px; }
+
+  /* ── COLLAPSIBLE ── */
+  .section-header {
+    cursor: pointer;
+    user-select: none;
+  }
+  .section-header:hover .section-title { color: var(--gold2); }
+
+  .collapse-icon {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .section-body {
+    overflow: hidden;
+    transition: max-height 0.25s ease, opacity 0.2s ease;
+    max-height: 2000px;
+    opacity: 1;
+  }
+
+  .section-body.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .collapse-icon.collapsed { color: var(--dim); }
+
+  /* ── MINI CHART MODAL ── */
+  .chart-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .chart-modal.open { display: flex; }
+
+  .chart-box {
+    background: #131722;
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    width: 100%;
+    max-width: 600px;
+    overflow: hidden;
+  }
+
+  .chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid #2a2a2a;
+  }
+
+  .chart-title {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .chart-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .chart-close:hover { color: var(--bright); }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="logo">
+    <svg class="logo-mark" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" fill="#0d0d0d" rx="4"/>
+      <rect x="2" y="2" width="32" height="32" fill="none" stroke="#c8a84b" stroke-width="0.8" rx="3" opacity="0.5"/>
+      <line x1="4" y1="8" x2="32" y2="8" stroke="#c8a84b" stroke-width="1.2"/>
+      <line x1="4" y1="28" x2="32" y2="28" stroke="#c8a84b" stroke-width="1.2"/>
+      <text x="18" y="22" font-family="Georgia, serif" font-size="13" font-weight="bold" fill="#c8a84b" text-anchor="middle">TO</text>
+    </svg>
+    <div class="logo-text">
+      <span class="logo-title">The Open</span>
+      <span class="logo-sub">Pre-Session Terminal</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-date" id="headerDate"></div>
+    <div class="header-time" id="headerTime"></div>
+  </div>
+</div>
+
+<!-- ── TRADINGVIEW TICKER TAPE ── -->
+<div class="tradingview-widget-container" style="height:46px;background:#0a0a0a;border-bottom:1px solid #2a2a2a;">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+  {
+    "symbols": [
+      {"proName":"CBOE:VIX","title":"VIX"},
+      {"proName":"TVC:DXY","title":"DXY"},
+      {"proName":"BITSTAMP:BTCUSD","title":"BTC"},
+      {"proName":"TVC:GOLD","title":"Gold"},
+      {"proName":"NYMEX:CL1!","title":"Oil"},
+      {"proName":"TVC:US10Y","title":"10Y Yield"},
+      {"proName":"CME_MINI:ES1!","title":"ES"},
+      {"proName":"CME_MINI:NQ1!","title":"NQ"}
+    ],
+    "showSymbolLogo": false,
+    "isTransparent": true,
+    "displayMode": "compact",
+    "colorTheme": "dark",
+    "locale": "en"
+  }
+  </script>
+</div>
+
+<!-- ── FEAR & GREED ── -->
+<div class="fg-row">
+  <div class="fg-label">F&amp;G</div>
+  <div class="fg-track"><div class="fg-needle" id="fgNeedle" style="left:50%"></div></div>
+  <div class="fg-score" id="fgScore">—</div>
+  <div class="fg-sentiment" id="fgSentiment" style="color:var(--muted)">Loading...</div>
+</div>
+
+<!-- ── COUNTDOWN ── -->
+<div class="countdown-row">
+  <div class="countdown-event" id="countdownEvent">◆ NEXT EVENT</div>
+  <div class="countdown-timer" id="countdownTimer">--:--:--</div>
+</div>
+
+<!-- ── ACTION BAR ── -->
+<div class="action-bar">
+  <div class="btn-row">
+    <button class="btn primary" id="newsBtn" onclick="fetchAllFeeds()">▶ Pull News</button>
+    <button class="btn" id="calBtn" onclick="toggleCalendar()">Calendar</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn" id="fedBtn" onclick="fetchFedWatch()">Fed Watch</button>
+    <a class="btn" href="https://alisdairmacdonald.substack.com" target="_blank">Newsletter ↗</a>
+  </div>
+  <div class="btn-row">
+    <a class="btn" href="https://trader.holaprime.com/en/dashboard?accountId=35521" target="_blank" style="border-color:#c8a84b;color:#c8a84b;background:#1a1400;">◆ Hola Prime Dashboard ↗</a>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" id="futuresBtn" onclick="fetchFutures()">Futures</button>
+    <button class="btn primary" id="trendingBtn" onclick="fetchTrending()">Movers</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn claude" onclick="analyseHeadlines()">◆ Claude Analysis</button>
+  </div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="setFilter('central-banks',this)">C.Banks</button>
+    <button class="filter-btn" onclick="setFilter('markets',this)">Markets</button>
+    <button class="filter-btn" onclick="setFilter('geopolitics',this)">Geo</button>
+    <button class="filter-btn" onclick="setFilter('newsletter',this)">Newsletter</button>
+  </div>
+</div>
+
+<div class="status-bar" id="statusBar">Loading...</div>
+
+<div class="content">
+
+  <!-- Futures -->
+  <div id="futuresSection" style="display:none;" class="section-wrap">
+    <div class="section-header" onclick="toggleSection('futuresBody','futuresIcon')">
+      <div class="section-title">CME Futures</div>
+      <div class="section-line"></div>
+      <div class="collapse-icon" id="futuresIcon">▼</div>
+    </div>
+    <div class="section-body" id="futuresBody">
+      <div id="futuresContent" class="futures-grid"></div>
+    </div>
+  </div>
+
+  <!-- Movers -->
+  <div id="trendingSection" style="display:none;" class="section-wrap">
+    <div class="section-header" onclick="toggleSection('moversBody','moversIcon')">
+      <div class="section-title" id="trendingLabel">Top Gainers</div>
+      <div class="section-line"></div>
+      <div class="section-actions" onclick="event.stopPropagation()">
+        <button id="tabGain" class="filter-btn active" onclick="switchTab('gainers')">Gain</button>
+        <button id="tabLose" class="filter-btn" onclick="switchTab('losers')">Loss</button>
+      </div>
+      <div class="collapse-icon" id="moversIcon" style="margin-left:6px">▼</div>
+    </div>
+    <div class="section-body" id="moversBody">
+      <div id="trendingContent" class="movers-grid"></div>
+    </div>
+  </div>
+
+  <!-- Fed Watch -->
+  <div id="fedSection" style="display:none;" class="section-wrap">
+    <div class="section-header" onclick="toggleSection('fedBody','fedIcon')">
+      <div class="section-title">Fed Watch</div>
+      <div class="section-line"></div>
+      <div class="collapse-icon" id="fedIcon">▼</div>
+    </div>
+    <div class="section-body" id="fedBody">
+      <div id="fedContent" class="fed-grid"></div>
+    </div>
+  </div>
+
+  <!-- Calendar -->
+  <div id="calendarSection" style="display:none;">
+    <a class="cal-link" href="https://www.investing.com/economic-calendar/" target="_blank">
+      Open Economic Calendar ↗
+    </a>
+  </div>
+
+  <!-- News -->
+  <div class="section-wrap" id="newsSection">
+    <div class="section-header" onclick="toggleSection('newsBody','newsIcon')">
+      <div class="section-title">News Feeds</div>
+      <div class="section-line"></div>
+      <div class="collapse-icon" id="newsIcon">▼</div>
+    </div>
+    <div class="section-body" id="newsBody">
+      <div id="contentArea">
+        <div class="placeholder">▶ PULL NEWS TO LOAD FEEDS</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── CLOCK ──
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('headerDate').textContent = now.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', year:'numeric' }).toUpperCase();
+    document.getElementById('headerTime').textContent = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ── FEEDS ──
+  const FEEDS = [
+    { name: 'Federal Reserve', url: 'https://www.federalreserve.gov/feeds/press_all.xml', category: 'central-banks' },
+    { name: 'ECB', url: 'https://www.ecb.europa.eu/rss/press.html', category: 'central-banks' },
+    { name: 'Bank of England', url: 'https://www.bankofengland.co.uk/rss/news', category: 'central-banks' },
+    { name: 'Financial Stability Board', url: 'https://www.fsb.org/feed', category: 'central-banks' },
+    { name: 'Exante Data', url: 'https://moneyinsideout.substack.com/feed', category: 'markets' },
+    { name: 'Investing.com', url: 'https://www.investing.com/rss/news.rss', category: 'markets' },
+    { name: 'Yahoo Finance', url: 'https://finance.yahoo.com/news/rssindex', category: 'markets' },
+    { name: 'CNBC Markets', url: 'https://www.cnbc.com/id/20910258/device/rss/rss.html', category: 'markets' },
+    { name: 'Financial Times', url: 'https://ft.com/rss/home', category: 'markets' },
+    { name: 'Nasdaq', url: 'https://www.nasdaq.com/feed/nasdaq-originals/rss.xml', category: 'markets' },
+    { name: 'Benzinga', url: 'https://feeds.benzinga.com/benzinga', category: 'markets' },
+    { name: 'Newsquawk', url: 'https://newsquawk.com/blog/feed.rss', category: 'markets' },
+    { name: 'AP World News', url: 'https://feeds.apnews.com/rss/apf-worldnews', category: 'geopolitics' },
+    { name: 'AP Politics', url: 'https://feeds.apnews.com/rss/apf-politics', category: 'geopolitics' },
+    { name: 'Al Jazeera', url: 'https://www.aljazeera.com/xml/rss/all.xml', category: 'geopolitics' },
+    { name: 'Foreign Affairs', url: 'https://foreignaffairs.com/rss.xml', category: 'geopolitics' },
+    { name: 'War on the Rocks', url: 'https://warontherocks.com/feed', category: 'geopolitics' },
+    { name: 'The Independent', url: 'https://www.independent.co.uk/news/world/politics/rss', category: 'geopolitics' },
+    { name: 'OilPrice.com', url: 'https://oilprice.com/rss/main', category: 'geopolitics' },
+    { name: 'Alisdair Macdonald', url: 'https://alisdairmacdonald.substack.com/feed', category: 'newsletter' },
+  ];
+
+  const FUTURES = [
+    { symbol: 'ES',  name: 'S&P 500',      tv: 'CME_MINI:ES1!',  yf: 'ES=F'  },
+    { symbol: 'NQ',  name: 'Nasdaq 100',   tv: 'CME_MINI:NQ1!',  yf: 'NQ=F'  },
+    { symbol: 'RTY', name: 'Russell 2000', tv: 'CME_MINI:RTY1!', yf: 'RTY=F' },
+    { symbol: 'GC',  name: 'Gold',         tv: 'COMEX:GC1!',     yf: 'GC=F'  },
+    { symbol: 'CL',  name: 'Crude Oil',    tv: 'NYMEX:CL1!',     yf: 'CL=F'  },
+    { symbol: 'ZB',  name: '30Y Treasury', tv: 'CBOT:ZB1!',      yf: 'ZB=F'  },
+  ];
+
+  const ECON_EVENTS = [
+    { name: 'FOMC Meeting',  date: new Date('2026-03-18T18:00:00Z') },
+    { name: 'NFP Report',    date: new Date('2026-04-03T12:30:00Z') },
+    { name: 'CPI Release',   date: new Date('2026-04-10T12:30:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-04-29T18:00:00Z') },
+    { name: 'NFP Report',    date: new Date('2026-05-01T12:30:00Z') },
+    { name: 'CPI Release',   date: new Date('2026-05-13T12:30:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-06-17T18:00:00Z') },
+    { name: 'NFP Report',    date: new Date('2026-06-05T12:30:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-07-29T18:00:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-09-16T18:00:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-10-28T18:00:00Z') },
+    { name: 'FOMC Meeting',  date: new Date('2026-12-09T18:00:00Z') },
+  ];
+
+  const TWELVE_KEY = '4fd31bffe6ef43799611d169c7e97ade';
+
+  let allItems    = [];
+  let currentFilter = 'all';
+  let cachedGainers = [];
+  let cachedLosers  = [];
+  let cachedFutures = [];
+  let activeTab     = 'gainers';
+
+  // ── COUNTDOWN ──
+  function startCountdown() {
+    const next = ECON_EVENTS.filter(e => e.date > new Date()).sort((a,b) => a.date - b.date)[0];
+    if (!next) return;
+    document.getElementById('countdownEvent').textContent = '◆ NEXT: ' + next.name.toUpperCase();
+    function tick() {
+      const diff = next.date - new Date();
+      if (diff <= 0) { document.getElementById('countdownTimer').textContent = '◆ NOW'; return; }
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      document.getElementById('countdownTimer').textContent =
+        (d > 0 ? d + 'D ' : '') + String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+  startCountdown();
+
+  // ── FEAR & GREED ──
+  async function fetchFearGreed() {
+    const proxies = ['https://corsproxy.io/?','https://api.allorigins.win/get?url='];
+    const url = 'https://production.dataviz.cnn.io/index/fearandgreed/graphdata';
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(8000) });
+        const raw = await res.text();
+        let json = JSON.parse(raw);
+        if (json.contents) json = JSON.parse(json.contents);
+        const score = Math.round(json?.fear_and_greed?.score ?? json?.score);
+        if (!isNaN(score)) {
+          document.getElementById('fgScore').textContent = score;
+          document.getElementById('fgNeedle').style.left = score + '%';
+          const map = { 'EXTREME FEAR':'#ff3333','FEAR':'#ff8800','NEUTRAL':'#ffcc00','GREED':'#00bb66','EXTREME GREED':'#008844' };
+          const label = score < 25 ? 'EXTREME FEAR' : score < 45 ? 'FEAR' : score < 55 ? 'NEUTRAL' : score < 75 ? 'GREED' : 'EXTREME GREED';
+          const el = document.getElementById('fgSentiment');
+          el.textContent = label;
+          el.style.color = map[label];
+          return;
+        }
+      } catch(e) { continue; }
+    }
+  }
+  fetchFearGreed();
+
+  // ── YAHOO QUOTE (used by futures only) ──
+  async function fetchYahooQuote(symbol) {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`;
+    const proxies = ['https://corsproxy.io/?','https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(6000) });
+        const raw = await res.text();
+        let json;
+        try { json = JSON.parse(raw); } catch(e) { continue; }
+        if (json.contents) { try { json = JSON.parse(json.contents); } catch(e) { continue; } }
+        const meta = json?.chart?.result?.[0]?.meta;
+        if (meta?.regularMarketPrice) {
+          const price = meta.regularMarketPrice;
+          const prev  = meta.chartPreviousClose || meta.previousClose || meta.regularMarketPreviousClose;
+          const pct   = prev ? ((price - prev) / prev) * 100 : null;
+          return { regularMarketPrice: price, regularMarketChangePercent: pct };
+        }
+      } catch(e) { continue; }
+    }
+    return null;
+  }
+
+  
+
+  // ── FUTURES ──
+  async function fetchTwelveDataQuote(symbol) {
+    const url = `https://api.twelvedata.com/quote?symbol=${encodeURIComponent(symbol)}&apikey=${TWELVE_KEY}`;
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      const json = await res.json();
+      if (json.status === 'error' || !json.close) return null;
+      const price = parseFloat(json.close);
+      const prev  = parseFloat(json.previous_close);
+      const pct   = ((price - prev) / prev) * 100;
+      return { regularMarketPrice: price, regularMarketChangePercent: pct, chartPreviousClose: prev };
+    } catch(e) { return null; }
+  }
+
+  async function fetchFutures() {
+    const btn = document.getElementById('futuresBtn');
+    const section = document.getElementById('futuresSection');
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+    section.style.display = 'block';
+    document.getElementById('futuresContent').innerHTML = '<div class="placeholder">Fetching futures...</div>';
+
+    const results = await Promise.all(FUTURES.map(async f => {
+      let data = await fetchTwelveDataQuote(f.symbol + '/USD');
+      if (!data) data = await fetchYahooQuote(f.yf);
+      return { ...f, price: data?.regularMarketPrice??null, pct: data?.regularMarketChangePercent??null };
+    }));
+
+    cachedFutures = results;
+    document.getElementById('futuresContent').innerHTML = results.map(f => {
+      const isUp  = (f.pct??0) >= 0;
+      const cls   = f.pct === null ? 'flat' : isUp ? 'up' : 'down';
+      const pctStr = f.pct !== null ? (isUp?'+':'') + f.pct.toFixed(2) + '%' : '—';
+      const priceStr = f.price !== null ? f.price.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—';
+      return `<div class="future-card ${cls}" onclick="openChart('${f.tv}','${f.symbol} — ${f.name}')">
+        <div class="future-sym">${f.symbol}</div>
+        <div class="future-name">${f.name}</div>
+        <div class="future-price">${priceStr}</div>
+        <div class="future-pct ${cls}">${pctStr}</div>
+      </div>`;
+    }).join('');
+
+    btn.textContent = 'Futures';
+    btn.disabled = false;
+  }
+
+  // ── MOVERS ──
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById('tabGain').classList.toggle('active', tab==='gainers');
+    document.getElementById('tabLose').classList.toggle('active', tab==='losers');
+    document.getElementById('trendingLabel').textContent = tab==='gainers' ? 'Top Gainers' : 'Top Losers';
+    renderTickers(tab==='gainers' ? cachedGainers : cachedLosers);
+  }
+
+  function renderTickers(stocks) {
+    const el = document.getElementById('trendingContent');
+    if (!stocks.length) { el.innerHTML = '<div class="placeholder">No data.</div>'; return; }
+    el.innerHTML = stocks.map(s => {
+      const isUp = s.pct >= 0;
+      const pctStr = (isUp?'+':'') + s.pct.toFixed(2) + '%';
+      const priceStr = s.price ? '$' + parseFloat(s.price).toFixed(2) : '';
+      const volStr = s.volume ? formatVolume(s.volume) : '';
+      return `<a class="mover-card ${isUp?'up':'down'}" href="https://finviz.com/quote.ashx?t=${s.symbol}" target="_blank">
+        <div class="mover-sym">${s.symbol}</div>
+        <div class="mover-name">${s.name||''}</div>
+        <div class="mover-pct ${isUp?'up':'down'}">${pctStr}</div>
+        <div class="mover-meta">${priceStr}${priceStr&&volStr?' · ':''}${volStr}</div>
+      </a>`;
+    }).join('');
+  }
+
+  function formatVolume(v) {
+    const n = parseInt(v);
+    if (isNaN(n)) return '';
+    if (n>=1e9) return (n/1e9).toFixed(1)+'B';
+    if (n>=1e6) return (n/1e6).toFixed(1)+'M';
+    if (n>=1e3) return (n/1e3).toFixed(0)+'K';
+    return n;
+  }
+
+  async function fetchTrending() {
+    const btn = document.getElementById('trendingBtn');
+    const section = document.getElementById('trendingSection');
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+    section.style.display = 'block';
+    document.getElementById('trendingContent').innerHTML = '<div class="placeholder">Fetching movers...</div>';
+    try {
+      const [g, l] = await Promise.all([fetchYahooMovers('day_gainers'), fetchYahooMovers('day_losers')]);
+      cachedGainers = g; cachedLosers = l;
+      if (!cachedGainers.length && !cachedLosers.length) { await fetchTrendingFMP(); return; }
+      renderTickers(activeTab==='gainers' ? cachedGainers : cachedLosers);
+    } catch(e) { await fetchTrendingFMP(); }
+    btn.textContent = 'Movers';
+    btn.disabled = false;
+  }
+
+  async function fetchYahooMovers(screener) {
+    const url = `https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=${screener}&count=20&formatted=false`;
+    const proxies = ['https://corsproxy.io/?','https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest='];
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy + encodeURIComponent(url), { signal: AbortSignal.timeout(10000) });
+        const raw = await res.text();
+        let json = JSON.parse(raw);
+        if (json.contents) json = JSON.parse(json.contents);
+        const quotes = json?.finance?.result?.[0]?.quotes;
+        if (Array.isArray(quotes) && quotes.length > 0) {
+          return quotes.map(q => ({ symbol:q.symbol||'', name:q.shortName||q.longName||'', price:q.regularMarketPrice??'', volume:q.regularMarketVolume??'', pct:q.regularMarketChangePercent??0 })).filter(s=>s.symbol);
+        }
+      } catch(e) { continue; }
+    }
+    return [];
+  }
+
+  async function fetchTrendingFMP() {
+    const KEY = '6hoVPhx5JJ6zXA6L32kmzpbOwUkivBQk';
+    try {
+      const res = await fetch(`https://financialmodelingprep.com/api/v3/stock_market/gainers?apikey=${KEY}`, { signal: AbortSignal.timeout(8000) });
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        cachedGainers = data.sort((a,b)=>b.changesPercentage-a.changesPercentage).slice(0,15).map(s=>({symbol:s.symbol,name:s.name||'',price:s.price||'',volume:s.volume||'',pct:s.changesPercentage||0}));
+        cachedLosers  = [...data].sort((a,b)=>a.changesPercentage-b.changesPercentage).slice(0,15).map(s=>({symbol:s.symbol,name:s.name||'',price:s.price||'',volume:s.volume||'',pct:s.changesPercentage||0}));
+        renderTickers(activeTab==='gainers'?cachedGainers:cachedLosers);
+      }
+    } catch(e) {}
+    document.getElementById('trendingBtn').textContent = 'Movers';
+    document.getElementById('trendingBtn').disabled = false;
+  }
+
+  // ── NEWS ──
+  function setStatus(msg, visible=true) {
+    const bar = document.getElementById('statusBar');
+    bar.textContent = msg;
+    bar.className = visible ? 'status-bar visible' : 'status-bar';
+  }
+
+  function setFilter(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderFiltered();
+  }
+
+  function parseRSS(xmlText) {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(xmlText, 'text/xml');
+      return Array.from(doc.querySelectorAll('item')).slice(0,8).map(item => ({
+        title: item.querySelector('title')?.textContent?.trim()||'Untitled',
+        summary: (item.querySelector('description')?.textContent||'').replace(/<[^>]*>/g,'').trim().slice(0,240),
+        link: item.querySelector('link')?.textContent?.trim()||'',
+        pubDate: item.querySelector('pubDate')?.textContent||''
+      }));
+    } catch(e) { return []; }
+  }
+
+  async function fetchFeed(feed) {
+    const proxies = ['https://api.allorigins.win/get?url=','https://api.codetabs.com/v1/proxy?quest=','https://corsproxy.io/?'];
+    for (const proxy of proxies) {
+      try {
+        const res = await fetch(proxy + encodeURIComponent(feed.url) + '&t=' + Date.now(), { signal: AbortSignal.timeout(8000) });
+        const text = await res.text();
+        let xml = text;
+        try { const j = JSON.parse(text); if (j.contents) xml = j.contents; } catch(e) {}
+        const parsed = parseRSS(xml);
+        if (parsed.length > 0) return parsed.map(item => ({ ...item, source:feed.name, category:feed.category, timestamp:new Date(item.pubDate).getTime()||0 }));
+      } catch(e) { continue; }
+    }
+    return [];
+  }
+
+  function renderFiltered() {
+    const area = document.getElementById('contentArea');
+    const filtered = currentFilter==='all' ? allItems : allItems.filter(i=>i.category===currentFilter);
+    if (!filtered.length) { area.innerHTML = '<div class="placeholder">No items found.</div>'; return; }
+    const grouped = {};
+    filtered.forEach(item => { if (!grouped[item.source]) grouped[item.source]=[]; grouped[item.source].push(item); });
+    area.innerHTML = Object.entries(grouped).map(([source, items]) => `
+      <div class="feed-section">
+        <div class="section-header">
+          <div class="section-title">${source}</div>
+          <div class="section-line"></div>
+        </div>
+        <div class="news-list">
+          ${items.map(item => `
+            <div class="news-item" onclick="this.classList.toggle('expanded')">
+              <div class="news-headline">${item.title}</div>
+              <div class="news-summary">${item.summary}</div>
+              <div class="news-footer">
+                <span class="news-source">${source}</span>
+                <a class="news-read" href="${item.link}" target="_blank">Read ↗</a>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  async function fetchAllFeeds() {
+    const btn = document.getElementById('newsBtn');
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+    setStatus('Loading feeds...');
+    allItems = [];
+    const results = await Promise.all(FEEDS.map(fetchFeed));
+    results.forEach(items => allItems.push(...items));
+    allItems.sort((a,b) => b.timestamp - a.timestamp);
+    renderFiltered();
+    setStatus('', false);
+    btn.textContent = '▶ Pull News';
+    btn.disabled = false;
+  }
+
+  function toggleCalendar() {
+    const sec = document.getElementById('calendarSection');
+    sec.style.display = sec.style.display==='none' ? 'block' : 'none';
+  }
+
+  // ── FED WATCH ──
+  function fetchFedWatch() {
+    const section = document.getElementById('fedSection');
+    const content = document.getElementById('fedContent');
+    section.style.display = 'block';
+    const today = new Date();
+    const fomcDates = [
+      new Date('2026-03-18'), new Date('2026-04-29'), new Date('2026-06-17'),
+      new Date('2026-07-29'), new Date('2026-09-16'), new Date('2026-10-28'), new Date('2026-12-09'),
+    ];
+    const next = fomcDates.find(d => d >= today);
+    const meetingStr = next ? next.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}) : 'TBC';
+    const days = next ? Math.ceil((next - today) / 86400000) : '';
+    content.innerHTML = `
+      <div class="fed-card">
+        <div class="fed-lbl">Target Range</div>
+        <div class="fed-val">4.25–4.50%</div>
+        <div class="fed-sub">Set Jan 2026</div>
+      </div>
+      <div class="fed-card">
+        <div class="fed-lbl">Next FOMC</div>
+        <div class="fed-val" style="font-size:0.8rem">${meetingStr}</div>
+        <div class="fed-sub">${days} days</div>
+      </div>
+      <div style="grid-column:1/-1">
+        <a href="https://www.cmegroup.com/markets/interest-rates/cme-fedwatch-tool.html" target="_blank"
+           style="display:block;background:var(--surface);border:1px solid var(--gold);color:var(--gold);text-align:center;padding:11px;border-radius:2px;text-decoration:none;font-family:var(--mono);font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;transition:background 0.15s;"
+           onmouseover="this.style.background='#1a1400'" onmouseout="this.style.background='var(--surface)'">
+          Open CME FedWatch Tool ↗
+        </a>
+      </div>`;
+    document.getElementById('fedBtn').textContent = 'Fed Watch';
+  }
+
+  // ── TOGGLE SECTIONS ──
+  function toggleSection(bodyId, iconId) {
+    const body = document.getElementById(bodyId);
+    const icon = document.getElementById(iconId);
+    const isCollapsed = body.classList.contains('collapsed');
+    body.classList.toggle('collapsed', !isCollapsed);
+    icon.classList.toggle('collapsed', !isCollapsed);
+    icon.textContent = isCollapsed ? '▼' : '▶';
+  }
+
+  // ── CLAUDE ANALYSIS ──
+  function analyseHeadlines() {
+    const headlines = Array.from(document.querySelectorAll('.news-headline'))
+      .map(h => h.textContent.trim()).filter(Boolean).slice(0,15).join('\n');
+
+    if (!headlines) { alert('Pull news first.'); return; }
+
+    const futuresText = cachedFutures.filter(f=>f.pct!==null)
+      .map(f=>`${f.symbol} (${f.name}): ${f.price?.toFixed(2)} ${f.pct>=0?'+':''}${f.pct?.toFixed(2)}%`).join(', ');
+
+    const movers = [...cachedGainers.slice(0,8), ...cachedLosers.slice(0,5)];
+    const moversText = movers.length ? movers.map(s=>`${s.symbol} ${s.pct>=0?'+':''}${s.pct.toFixed(2)}%${s.name?' ('+s.name+')':''}`).join(', ') : null;
+
+    const fgScore = document.getElementById('fgScore').textContent;
+    const fgLabel = document.getElementById('fgSentiment').textContent;
+    const vix     = document.getElementById('pVIX').textContent;
+
+    let context = '';
+    if (futuresText) context += `\n\nCME Futures:\n${futuresText}`;
+    if (moversText)  context += `\n\nTop movers:\n${moversText}`;
+    if (fgScore!=='—') context += `\n\nFear & Greed: ${fgScore} (${fgLabel})`;
+    if (vix!=='—') context += ` | VIX: ${vix}`;
+
+    const prompt = `You are a seasoned financial and geopolitical analyst writing for a prop trader who trades ES, NQ, RTY, GC, CL and ZB futures on CME. Write a concise pre-session briefing in flowing prose. No bullet points, no headers, no em-dashes. Short punchy sentences. Cover what matters for opening the session — macro backdrop, key levels, which futures are in play and why, any geopolitical risk. Be direct and analytical. Do not pad or repeat.\n\nHeadlines:\n${headlines}${context}\n\nWrite the briefing now:`;
+
+    window.open('https://claude.ai/new?q=' + encodeURIComponent(prompt), '_blank');
+  }
+</script>
+<!-- ── MINI CHART MODAL ── -->
+<div class="chart-modal" id="chartModal" onclick="closeChart(event)">
+  <div class="chart-box">
+    <div class="chart-header">
+      <div class="chart-title" id="chartTitle">Chart</div>
+      <button class="chart-close" onclick="closeChartBtn()">✕</button>
+    </div>
+    <div id="chartWidget"></div>
+  </div>
+</div>
+
+</body>
+</html>
